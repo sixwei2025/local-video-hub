@@ -1,0 +1,327 @@
+{
+  "_说明": "示例配置：按你的桌面产线改 scan_roots / output_dirs / rules。match 为正则，匹配完整绝对路径（含文件名），按顺序第一条命中生效。修改后在页面点「重新扫描」即可。首次使用：cp config.example.json config.json",
+  "scan_roots": [
+    "~/Desktop/产线A-心理科普",
+    "~/Desktop/产线B-口播成片",
+    "~/Desktop/产线C-3D地图",
+    "~/Desktop/产线D-宣传片",
+    "~/Desktop/产线E-人物传记",
+    "~/Desktop/产线F-文哲",
+    "~/Desktop/产线G-实验室"
+  ],
+  "exclude": [
+    "/node_modules/",
+    "/\\.venv/",
+    "/venv/",
+    "/chrome-profile/",
+    "/profile/",
+    "/\\.git/",
+    "/Library/",
+    "/site-packages/",
+    "/models/"
+  ],
+  "video_ext": [
+    ".mp4",
+    ".mov",
+    ".m4v"
+  ],
+  "image_ext": [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp"
+  ],
+  "lines": [
+    {
+      "id": "lab",
+      "name": "实验室",
+      "color": "#6366f1"
+    },
+    {
+      "id": "kepu",
+      "name": "心理科普",
+      "color": "#10b981"
+    },
+    {
+      "id": "wenzhe",
+      "name": "文哲",
+      "color": "#f59e0b"
+    },
+    {
+      "id": "duanju",
+      "name": "人物传记",
+      "color": "#ef4444"
+    },
+    {
+      "id": "map3d",
+      "name": "3D地图",
+      "color": "#0ea5e9"
+    },
+    {
+      "id": "koubo",
+      "name": "口播",
+      "color": "#a855f7"
+    },
+    {
+      "id": "promo",
+      "name": "宣传片",
+      "color": "#ec4899"
+    },
+    {
+      "id": "other",
+      "name": "未归类",
+      "color": "#94a3b8"
+    }
+  ],
+  "rules": [
+    {
+      "line": "kepu",
+      "match": "产线A-心理科普|心理|/kepu/|psych",
+      "type": "psych"
+    },
+    {
+      "line": "koubo",
+      "match": "产线B-口播|口播"
+    },
+    {
+      "line": "map3d",
+      "match": "产线C-3D|3D ?地图|/3dmap"
+    },
+    {
+      "line": "promo",
+      "match": "产线D-宣传|宣传片|/promo-"
+    },
+    {
+      "line": "duanju",
+      "match": "产线E-人物|人物传记|/传记/|/短剧/"
+    },
+    {
+      "line": "wenzhe",
+      "match": "产线F-文哲|文学哲学|文哲"
+    },
+    {
+      "line": "lab",
+      "match": "产线G-实验室|/lab/|视频大杂烩"
+    }
+  ],
+  "kind_rules": {
+    "_说明": "命中 draft 正则的视为草稿（片段/中间产物），其余为成片",
+    "draft": "/_qc|/qc_|_redo|/tmp|/temp|/segments?/|/scenes?/|/clips?/|/parts?/|/shots?/|/frames?/|/staging/|/uploads/|/work/|/build/|/raw/|/audio/|草稿|draft|seg_?\\d|scene_?\\d|clip_?\\d|part_?\\d|shot_?\\d|_silent|_nobgm|_noaudio|_v\\d+_tmp|/镜/|镜\\d+|成片_无声|(^|[-_/])lo([-_.]|$)|(^|[-_/])seg([-_.\\d]|$)|[-_]preview|sample_\\d|/assets/|/src/|/(body|orig)\\.mp4$",
+    "fragment": {
+      "_说明": "成片之外的碎片（分段/镜头/无声版/测试/中间产物/叠加或封面合成草稿/过短）不进网站；已发布、精选、风格小样、hub.py submit 提交的作品豁免",
+      "min_duration": 8,
+      "name_regex": "(^|[-_./ ])(segments?|clips?|shots?|scenes?|seg|parts?|tmp|temp|test|preview|body|orig|overlay|nosub|silent|mute|intermediate|comp_?draft)([-_. \\d]|$)|镜\\d*|分镜|片段|无声|无字幕|叠加|封面合成|测试",
+      "no_audio_ratio": 0.5,
+      "exempt": [
+        "published",
+        "featured",
+        "style_sample",
+        "hub_submit"
+      ]
+    }
+  },
+  "status_rules": {
+    "_说明": "初始状态推断（手动改过的以数据库为准）；发布记录里的视频自动标为已发布",
+    "test": "小样|样片|sample|test|测试|demo|dryrun"
+  },
+  "publish_records": [],
+  "publish_defaults": {
+    "_说明": "发布表单预填：按产线给默认话题和简介尾巴；先按视频类型（styles.json 的 type id）找，找不到再按产线",
+    "lab": {
+      "topics": [
+        "vibe知识大赏",
+        "科普"
+      ],
+      "desc_tail": "内容含AI生成"
+    },
+    "kepu": {
+      "topics": [
+        "心理学",
+        "科普"
+      ],
+      "desc_tail": "内容含AI生成"
+    },
+    "wenzhe": {
+      "topics": [
+        "文学",
+        "哲学"
+      ],
+      "desc_tail": "内容含AI生成"
+    },
+    "duanju": {
+      "topics": [
+        "人物传记",
+        "历史"
+      ],
+      "desc_tail": "内容含AI生成"
+    },
+    "map3d": {
+      "topics": [
+        "历史",
+        "3D地图"
+      ],
+      "desc_tail": "内容含AI生成"
+    },
+    "koubo": {
+      "topics": [
+        "AI",
+        "科技"
+      ],
+      "desc_tail": "内容含AI生成"
+    },
+    "promo": {
+      "topics": [
+        "城市宣传片"
+      ],
+      "desc_tail": "内容含AI生成"
+    },
+    "other": {
+      "topics": [],
+      "desc_tail": "内容含AI生成"
+    },
+    "hotnews": {
+      "topics": [
+        "AI",
+        "科技热点"
+      ],
+      "desc_tail": "内容含AI生成"
+    },
+    "psych": {
+      "topics": [
+        "心理学",
+        "科普"
+      ],
+      "desc_tail": "内容含AI生成"
+    },
+    "daihuo": {
+      "topics": [
+        "好物推荐"
+      ],
+      "desc_tail": "内容含AI生成"
+    }
+  },
+  "style_rules": {
+    "_说明": "成片 → 视频类型 + 风格（styles.json 的 id）。按顺序匹配完整路径；style 留空 = 类型已知、风格未识别。页面可手动改。",
+    "rules": [
+      {
+        "match": "心理|/kepu/|psych|产线A",
+        "type": "psych",
+        "style": ""
+      },
+      {
+        "match": "口播|产线B",
+        "type": "koubo",
+        "style": ""
+      },
+      {
+        "match": "3D ?地图|3dmap|产线C",
+        "type": "map3d",
+        "style": ""
+      },
+      {
+        "match": "宣传片|promo|产线D",
+        "type": "promo",
+        "style": ""
+      },
+      {
+        "match": "人物传记|/短剧/|产线E",
+        "type": "duanju",
+        "style": ""
+      },
+      {
+        "match": "文哲|文学哲学|产线F",
+        "type": "wenzhe",
+        "style": ""
+      },
+      {
+        "match": "产线G|/lab/",
+        "type": "lab",
+        "style": ""
+      }
+    ]
+  },
+  "title_rules": {
+    "_说明": "成片显示标题：发布记录标题优先；否则文件名去前缀/后缀；文件名太泛（generic）时用上级目录名",
+    "strip_prefix": "^(【Vibe知识大赏】|Vibe知识大赏｜|vibe|文学哲学|来龙去脉|ainews|laylongqumai|promo)[-_]?",
+    "strip_suffix": "([-_](样片|短样v?\\d*|v\\d+|封面版|抖音版|YouTube版|final|deliver|publish|chat|full|克隆声|横版|竖版))+$",
+    "generic": "^(out|output|source|sample|final|main|video|render|成片|正片|index|preview|test|ref|clip|tmp|\\d+)$",
+    "aliases": {
+      "_说明": "文件名里的拼音/英文 → 显示用中文（整词替换，忽略大小写）",
+      "war feishui": "淝水之战",
+      "war jingxing": "井陉之战",
+      "war kunyang": "昆阳之战",
+      "wuzetian qianling": "武则天乾陵",
+      "qianling": "乾陵",
+      "beijing": "北京",
+      "canal": "大运河",
+      "sarhu": "萨尔浒之战",
+      "taizhou": "台州",
+      "wuhan": "武汉",
+      "guandu": "官渡",
+      "psych-kepu-launch": "心理科普发布片",
+      "3dmap-promo": "3D地图宣传片",
+      "3dmap promo": "3D地图宣传片",
+      "koubo-skill-promo": "口播 Skill 宣传片",
+      "jitxun-s2-paper-lantern": "视频实战营 纸雕灯影",
+      "A news": "口播风格 A · 新闻",
+      "B desk": "口播风格 B · 桌面",
+      "C collage": "口播风格 C · 拼贴",
+      "D board": "口播风格 D · 白板",
+      "A vox": "热点风格 A · Vox 调查桌",
+      "B whiteboard": "热点风格 B · 黑板手绘",
+      "C keynote": "热点风格 C · 发布会",
+      "D 3b1b": "热点风格 D · 3b1b",
+      "codex额度": "Codex 额度周末被扣光",
+      "openmontage": "OpenMontage",
+      "hypit": "乾陵 hypit 样片"
+    }
+  },
+  "version_rules": {
+    "_说明": "同名多版本合并：标题去掉这些版本词后，同产线下相同的归为一个作品。按需增删。",
+    "tokens": "v\\d+(v\\d+)?|hq|nocover|small|final|raw|tmp|bak|旧|\\d{3,4}p|sample\\d*|\\d+mbps|修音版|地形测试|测试|封面统一|无bgm备份|混bgm|样片|备份|h|副本|copy|新版|横版|竖版|deliver|publish|chat|full|lo|封面版|定稿|终版",
+    "group_by": "line"
+  },
+  "output_dirs": {
+    "_说明": "每种视频类型的默认保存位置（生成页选类型自动填入，可改）",
+    "psych": "~/Desktop/产线A-心理科普",
+    "hotnews": "~/Desktop/产线B-口播成片",
+    "koubo": "~/Desktop/产线B-口播成片",
+    "map3d": "~/Desktop/产线C-3D地图",
+    "promo": "~/Desktop/产线D-宣传片",
+    "duanju": "~/Desktop/产线E-人物传记",
+    "wenzhe": "~/Desktop/产线F-文哲",
+    "daihuo": "~/Desktop/产线G-实验室",
+    "collage": "~/Desktop/产线G-实验室",
+    "lab": "~/Desktop/产线G-实验室",
+    "product_demo": "~/Desktop/产线G-实验室",
+    "customer_case": "~/Desktop/产线G-实验室",
+    "tutorial": "~/Desktop/产线G-实验室",
+    "storytelling": "~/Desktop/产线G-实验室"
+  },
+  "type_lines": {
+    "_说明": "生成页选视频类型后，产线下拉自动跟随",
+    "psych": "kepu",
+    "hotnews": "lab",
+    "wenzhe": "wenzhe",
+    "duanju": "duanju",
+    "map3d": "map3d",
+    "koubo": "koubo",
+    "promo": "promo",
+    "daihuo": "lab",
+    "collage": "lab",
+    "product_demo": "lab",
+    "customer_case": "lab",
+    "tutorial": "lab",
+    "storytelling": "lab"
+  },
+  "showcase": {
+    "_说明": "客户展示页 /showcase：只放精选作品。order 填作品 id 可手动排序；client_mode=true 时「用同款制作」显示联系提示",
+    "title": "本地视频中心",
+    "tagline": "用 AI 把好内容做成好视频",
+    "intro": "每个 AI 员工把成片、封面、状态交到同一中心；合伙人克隆后，全员共用一个本地视频知识库。",
+    "order": [],
+    "client_mode": false,
+    "contact": "想要同款？联系你的团队按这个样式制作。"
+  },
+  "_说明_scan_roots": "网站与 hub under_roots 的允许根：仅桌面产线文件夹（与存在的 output_dirs 一致）。hub submit 的成片必须在此之内。"
+}

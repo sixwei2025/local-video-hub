@@ -1,0 +1,122 @@
+/* ============================================================
+   电影幕布（Cinema Curtain）—— 汇芯视频中心标准视觉，必须保留
+   顶部红色丝绒幕帘（波浪下摆）+ 金色流苏 + 两束缓慢摆动的追光 + 红色舞台光晕
+   来源：P0「剧院风」横幅 .house/.valance/.fringe/.beam（Phase 1 压缩顶栏时被移除，2026-10-21 恢复）
+   规则见 docs/设计规范.md「电影幕布」一节。不得删除、不得改成纯色条。
+   ============================================================ */
+:root{
+ --curtain-h:34px;                 /* 幕帘高度：保持顶栏纤细 */
+ --curtain-scallop:72px;           /* 波浪下摆宽度 */
+ --curtain-top:#3a040c;--curtain-mid:#5C0614;--curtain-low:#C8102E;--curtain-edge:#7d0a1b;
+ --fringe:#c9a45c;--fringe-opacity:.5;
+ --beam-color:255,225,215;--beam-opacity:.28;--glow:rgba(200,16,46,.20)
+}
+.curtain{position:relative;height:var(--curtain-h);z-index:60;pointer-events:none}
+.curtain .valance{position:absolute;inset:0;background:linear-gradient(180deg,var(--curtain-top),var(--curtain-mid) 40%,var(--curtain-low) 78%,var(--curtain-edge));
+ -webkit-mask:radial-gradient(calc(var(--curtain-scallop)/2) 14px at 50% 100%,transparent 98%,#000 100%) 0 0/var(--curtain-scallop) 100% repeat-x;
+ mask:radial-gradient(calc(var(--curtain-scallop)/2) 14px at 50% 100%,transparent 98%,#000 100%) 0 0/var(--curtain-scallop) 100% repeat-x}
+.curtain .valance::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 2px,transparent 2px 18px,rgba(255,255,255,.05) 18px 20px,transparent 20px 36px)}
+.curtain .fringe{position:absolute;left:0;right:0;top:calc(var(--curtain-h) - 18px);height:18px;opacity:var(--fringe-opacity);
+ background:radial-gradient(calc(var(--curtain-scallop)/2) 14px at 50% 0,transparent 96%,var(--fringe) 97%,transparent 104%) 0 0/var(--curtain-scallop) 100% repeat-x}
+.curtain .beam{position:absolute;top:-20px;width:34vw;height:520px;opacity:var(--beam-opacity);mix-blend-mode:screen;filter:blur(6px);transform-origin:50% 0;
+ background:conic-gradient(from 180deg at 50% 0,transparent 0 170deg,rgba(var(--beam-color),.16) 176deg,rgba(var(--beam-color),.24) 180deg,rgba(var(--beam-color),.16) 184deg,transparent 190deg)}
+.curtain .beam.l{left:6vw;transform:rotate(-22deg);animation:cbl 12s ease-in-out infinite alternate}
+.curtain .beam.r{right:6vw;transform:rotate(22deg);animation:cbr 14s ease-in-out infinite alternate}
+.curtain .glow{position:absolute;left:0;right:0;top:0;height:260px;background:radial-gradient(900px 240px at 50% 0,var(--glow),transparent 70%)}
+@keyframes cbl{to{transform:rotate(-12deg)}}@keyframes cbr{to{transform:rotate(12deg)}}
+@media (prefers-reduced-motion:reduce){.curtain .beam{animation:none}}
+/* ===== 幕布英雄区（作品管理首页完整版；生成/发布页轻量版）——必须保留 ===== */
+.house{position:relative;overflow:hidden;isolation:isolate;background:radial-gradient(900px 300px at 50% 40%,rgba(200,16,46,.22),transparent 70%),linear-gradient(180deg,#140b0b,#0b0807)}
+.house .curtain{position:absolute;left:0;right:0;top:0;z-index:4}
+.house .marquee{position:relative;z-index:2;text-align:center;padding:36px 16px 8px}
+.house .presents{margin:0;font:600 10px/1 var(--caps);letter-spacing:.46em;color:var(--cream-2)}
+.house .wordmark{margin:10px 0 0;font:900 40px/1.05 var(--serif)!important;letter-spacing:.16em;color:var(--cream);text-shadow:0 2px 0 rgba(0,0,0,.5),0 0 34px rgba(200,16,46,.5)}
+.house .wordmark::after{content:"";display:block;width:64px;height:3px;margin:10px auto 0;background:var(--red);box-shadow:0 0 16px var(--red)}
+.house .edition{margin:9px auto 0;font:500 12px/1 var(--serif);letter-spacing:.36em;color:var(--cream-2)}
+.hstats{display:flex;justify-content:center;gap:6px 40px;margin-top:16px;flex-wrap:wrap}
+.hs{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:64px;cursor:pointer;text-decoration:none;color:var(--cream)}
+.hs b{font:700 26px/1 var(--caps)}.hs span{font:11px var(--ui);letter-spacing:.16em;color:var(--cream-2)}
+.hs i{display:block;width:56px;height:2px;background:rgba(246,237,223,.12);position:relative;overflow:hidden;border-radius:2px}
+.hs i::after{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--p);background:var(--red)}
+.hs:hover b{color:#fff;text-shadow:0 0 14px rgba(200,16,46,.8)}.hs-failed b{color:#ff8a8a}.hs-published i::after{background:#2f855a}.hs-confirm i::after{background:#b7791f}
+.hs.extra{cursor:default;border-left:1px solid rgba(246,237,223,.12);padding-left:36px}.hs.extra em{font:normal 10px var(--ui);color:var(--dim);letter-spacing:.08em}
+.linebar{max-width:560px;margin:12px auto 0}.lb{display:flex;height:4px;border-radius:3px;overflow:hidden;gap:1px;opacity:.9}
+.lbl{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:10px;color:var(--dim)}.lbl i{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}
+/* 轻量版：生成/发布页只留幕帘+小标题 */
+body.lite .house .marquee{padding:40px 16px 10px}body.lite .house .wordmark{font-size:22px!important;letter-spacing:.2em}body.lite .house .wordmark::after{width:40px;margin-top:6px}
+body.lite .hstats,body.lite .linebar,body.lite .house .edition,body.lite .house .presents{display:none}
+/* 首页大标题已显示品牌名：顶栏只保留「汇」标记 */
+body.home .topbar .brand .bname{display:none}
+/* 展示页 */
+.house.sc .marquee{padding:50px 16px 26px}
+/* hero 次级数字：与主数字同款，略小，无盒子 */
+.hstats{align-items:flex-start}
+.hsep{width:1px;align-self:stretch;margin:2px 4px;background:rgba(246,237,223,.14)}
+.hs.sm{cursor:default;padding-top:5px}.hs.sm b{font-size:20px;color:var(--cream)}.hs.sm span{color:var(--dim)}
+.hs.sm:hover b{color:var(--cream);text-shadow:none}
+.hs-published i::after,.hs-confirm i::after{background:var(--red)}
+.linebar{max-width:420px;margin:12px auto 0}.lb{height:2px;gap:0;opacity:.45;border-radius:1px}.lbl{display:none}
+#linebar,.linebar{display:none!important}
+/* 留白：英雄区与功能区之间 */
+#hero.house{padding-bottom:28px;background:radial-gradient(900px 300px at 50% 40%,rgba(200,16,46,.22),transparent 70%),linear-gradient(180deg,#140b0b 0%,#0b0807 75%,var(--bg,#0a0808) 100%)}
+#hero.house::after{content:"";position:absolute;left:12%;right:12%;bottom:0;height:1px;background:linear-gradient(90deg,transparent,rgba(246,237,223,.10),transparent)}
+body.lite #hero.house{padding-bottom:12px}
+#hero .marquee{padding-top:28px}.hs b{font-size:24px}.hs.sm b{font-size:19px}
+.topbar{margin-bottom:22px}.filters{margin-bottom:14px}
+/* 去掉「汇」方形标志：首页品牌位留空、标签左移；其他页只留单行文字 */
+.mark{display:none!important}
+.brand .bname{display:flex!important}.brand .bname small{display:none!important}
+body.home .topbar .brand,body.home .topbar .bsep{display:none!important}
+#hero .marquee{padding-top:36px}
+/* 留白 v2 */
+#hero.house{padding-bottom:52px}body.lite #hero.house{padding-bottom:28px}
+.house .wordmark::after{margin-top:14px!important}
+.house .edition{margin-top:14px!important}
+.hstats{margin-top:30px!important}
+.topbar{margin-bottom:36px!important}.filters{margin-bottom:24px!important}
+.house.sc{padding-bottom:52px}.house.sc+.sbar,.sbar{margin-bottom:36px}
+/* 留白 v3：数字行底 → 导航栏顶 ≈72px，最大的一段留白；分隔线居中 */
+#hero.house{padding-bottom:64px}
+#hero.house::after{bottom:36px}
+/* 幕布流苏底≈42px：presents 至少再下 14px，任何宽度不重叠 */
+#hero .marquee,.house.sc .marquee{padding-top:calc(var(--curtain-h,34px) + 22px)!important}
+body.lite #hero .marquee{padding-top:calc(var(--curtain-h,34px) + 14px)!important}
+/* ---- 风格小样弹窗（居中放大） ---- */
+#smod{position:fixed;inset:0;z-index:900;display:grid;place-items:center}
+#smod[hidden]{display:none}
+#smod .smod-bg{position:absolute;inset:0;background:rgba(8,5,5,.72);backdrop-filter:blur(10px) saturate(.8);-webkit-backdrop-filter:blur(10px) saturate(.8);opacity:0;transition:opacity .32s ease-out}
+#smod.show .smod-bg{opacity:1}
+#smod .smod-panel{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 340px;width:min(1180px,92vw);height:min(78vh,820px);background:linear-gradient(180deg,#1a0e0f,#0e0a0a);border:1px solid rgba(246,237,223,.10);border-radius:14px;box-shadow:0 40px 120px rgba(0,0,0,.7),0 0 0 1px rgba(200,16,46,.18);overflow:hidden;transform-origin:center;will-change:transform}
+#smod .smod-stage{position:relative;background:#050303;display:grid;place-items:center;min-height:0}
+#smod .smod-v{max-width:100%;height:66vh;max-height:100%;object-fit:contain;display:block}
+#smod .smod-empty{display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--cream-2,#d8ccbb);font-family:"Songti SC",serif}
+#smod .smod-empty b{font-size:22px;letter-spacing:.2em;color:var(--cream,#f6eddf)}#smod .smod-empty span{font-size:13px;letter-spacing:.12em;color:#8f8579}
+#smod .smod-empty::before{content:"";width:64px;height:64px;border:1px dashed rgba(200,16,46,.6);border-radius:50%;margin-bottom:6px}
+#smod .smod-snd{position:absolute;left:16px;bottom:16px;background:rgba(0,0,0,.55);color:#f6eddf;border:1px solid rgba(246,237,223,.2);border-radius:999px;padding:6px 14px;font-size:12px;cursor:pointer}
+#smod .smod-snd:hover{border-color:#C8102E}
+#smod .smod-info{padding:40px 30px 28px;display:flex;flex-direction:column;gap:10px;border-left:1px solid rgba(246,237,223,.07);overflow:auto}
+#smod .smod-kick{margin:0;font-size:11px;letter-spacing:.3em;color:#C8102E}
+#smod .smod-name{margin:0;font:700 26px/1.3 "Songti SC","STSong",serif;color:#f6eddf;letter-spacing:.06em}
+#smod .smod-rule{width:36px;height:2px;background:#C8102E;margin:4px 0 6px}
+#smod .smod-feat{margin:0;color:#d8ccbb;font-size:13px;line-height:1.7}
+#smod .smod-dl{display:grid;grid-template-columns:72px 1fr;gap:12px 10px;margin:14px 0 0;font-size:13px}
+#smod .smod-dl dt{color:#8f8579;letter-spacing:.1em}#smod .smod-dl dd{margin:0;color:#f6eddf;line-height:1.6}
+#smod .smod-use{margin-top:auto;height:46px;border:0;border-radius:10px;background:#C8102E;color:#fff;font-size:15px;letter-spacing:.2em;cursor:pointer;box-shadow:inset 0 -3px 0 #5C0614}
+#smod .smod-use:hover{background:#d8183a}
+#smod .smod-x{position:absolute;top:12px;right:14px;z-index:3;width:34px;height:34px;border-radius:50%;border:1px solid rgba(246,237,223,.18);background:rgba(0,0,0,.4);color:#f6eddf;font-size:20px;line-height:1;cursor:pointer}
+#smod .smod-x:hover{border-color:#C8102E;color:#fff}
+html.smod-on{overflow:hidden}
+@media (prefers-reduced-motion:reduce){#smod .smod-bg{transition:none}}
+/* ---- 自定义风格：参考视频 ---- */
+.srv-drop{border:1px dashed rgba(246,237,223,.22);border-radius:10px;padding:18px;text-align:center;color:#bfb3a3;cursor:pointer;transition:border-color .2s,background .2s}
+.srv-drop.over,.srv-drop:hover{border-color:#C8102E;background:rgba(200,16,46,.06)}.srv-drop b{color:#f6eddf}
+.srv-link{display:flex;gap:8px;margin-top:10px}.srv-link input{flex:1}
+.srv-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:12px}
+.srv-card{position:relative;background:#0b0808;border:1px solid rgba(246,237,223,.1);border-radius:8px;overflow:hidden}
+.srv-card video{width:100%;height:110px;object-fit:cover;display:block;background:#000}
+.srv-card .m{display:flex;justify-content:space-between;gap:6px;padding:6px 8px;font-size:11px;color:#d8ccbb}.srv-card .m b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srv-card .d{position:absolute;right:6px;top:86px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;padding:1px 6px;border-radius:4px}
+.srv-card .rm{position:absolute;right:6px;top:6px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;cursor:pointer}
+.srv-card.wait{padding:14px;font-size:12px;color:#bfb3a3}
+.srv-save{display:flex;gap:8px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid rgba(246,237,223,.07)}.srv-save input{flex:1}
+.sty .mine-tag{position:absolute;left:6px;top:6px;background:#C8102E;color:#fff;font-size:10px;padding:1px 6px;border-radius:3px;letter-spacing:.1em}

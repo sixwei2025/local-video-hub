@@ -1,0 +1,54 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>汇芯视频中心 · 精选案例</title><link rel="stylesheet" href="/static/cinema.css"><link rel="stylesheet" href="/static/showcase.css"><link rel="stylesheet" href="/static/studio.css"></head><body>
+<header class="house sc">
+<div class="curtain" aria-hidden="true"><div class="glow"></div><i class="beam l"></i><i class="beam r"></i><div class="valance"></div><div class="fringe"></div></div>
+  <div class="marquee"><p class="presents">HUIXIN STUDIO</p><h1 class="wordmark">汇芯视频中心</h1><p class="edition">精选案例 · SELECTED WORKS</p></div>
+</header>
+<header class="sbar"><div class="in">
+ <a class="brand" href="#top"><span class="bname"><b>汇芯视频中心</b><small>HUIXIN · VIDEO HUB</small></span></a>
+ <nav class="snav"><a href="#cases">精选案例</a><a href="#types">能做什么</a></nav>
+</div></header>
+<section class="hero" id="top"><div class="in">
+ <p class="kick">SELECTED WORKS · 精选案例</p>
+ <h1 id="hTitle">用 AI 把好内容<br>做成好视频</h1>
+ <p class="lead" id="hIntro"></p>
+ <div class="hstats" id="hStats"></div>
+</div></section>
+<section class="player" id="stage" hidden><div class="in">
+ <div class="pv"><video id="pv" controls playsinline preload="metadata"></video></div>
+ <div class="pinfo"><p class="kick" id="pType"></p><h2 id="pTitle"></h2><p id="pIntro" class="pintro"></p>
+  <div class="pbtns"><button class="primary" id="pSame">用同款制作</button><button class="ghost" id="pNext">下一个案例 →</button></div><p class="contact" id="pContact" hidden></p></div>
+</div></section>
+<section class="cases" id="cases"><div class="in">
+ <div class="shead"><h3>精选案例</h3><div class="tabs" id="tabs"></div></div>
+ <div class="grid" id="grid"></div>
+</div></section>
+<section class="types" id="types"><div class="in"><h3>能做什么</h3><div class="tgrid" id="tgrid"></div></div></section>
+<footer class="sfoot"><div class="in">汇芯视频中心 · 精选案例</div></footer>
+<script>/*__STATIC_DATA__*/</script><script src="/static/stylemodal.js"></script>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=s=>s?`${Math.floor(s/60)}:${String(Math.round(s%60)).padStart(2,"0")}`:"";
+const STATIC=!!window.SHOWCASE_DATA;let D,F="",CUR=0;
+const src=i=>STATIC?i.src:`/media/${i.id}`,poster=i=>STATIC?i.poster:`/thumb/${i.id}`;
+function list(){return D.items.filter(i=>!F||i.video_type==F)}
+function play(i,auto){const L=list();CUR=L.indexOf(i);$("#stage").hidden=false;const v=$("#pv");v.src=src(i);v.poster=poster(i);v.classList.toggle("pt",i.portrait);
+ $("#pType").textContent=[i.type,i.style].filter(Boolean).join(" · ");$("#pTitle").textContent=i.title;$("#pIntro").textContent=i.intro||"";
+ const go=()=>{if(D.client_mode||STATIC){$("#pContact").hidden=false;$("#pContact").textContent=D.contact}else location.href=`/#gen?t=${encodeURIComponent(i.video_type||"")}&s=${encodeURIComponent(i.style_id||"")}&topic=${encodeURIComponent(i.title)}`};
+ $("#pSame").onclick=e=>{if(window.StyleModal&&!STATIC&&i.style_id)StyleModal.open(i.style_id,e.currentTarget,{name:i.style,useText:D.client_mode?"想要同款":"用这个风格",onUse:go});else go()};
+ $("#pNext").hidden=L.length<2;$("#pContact").hidden=true;
+ if(auto){v.play().catch(()=>{});$("#stage").scrollIntoView({behavior:"smooth",block:"start"})}}
+function render(){const L=list();
+ $("#grid").innerHTML=L.map((i,n)=>`<article class="card ${i.portrait?"pt":""}" data-n="${n}"><div class="th"><img loading="lazy" src="${poster(i)}" alt=""><span class="play">▶ 播放案例</span>${i.duration?`<span class="dur">${fmt(i.duration)}</span>`:""}</div>
+  <div class="ci"><p class="kick">${esc(i.type||"")}${i.style?`${i.type?" · ":""}<span class="stag" data-sid="${esc(i.style_id||"")}" title="看这个风格的小样">${esc(i.style)}</span>`:""}</p><h4>${esc(i.title)}</h4>${i.intro?`<p>${esc(i.intro)}</p>`:""}</div></article>`).join("")||`<div class="empty">精选案例正在整理中</div>`;
+ document.querySelectorAll(".card").forEach(c=>c.onclick=e=>{const t=e.target.closest(".stag");const i=L[+c.dataset.n];
+  if(t&&window.StyleModal&&!STATIC&&t.dataset.sid){e.stopPropagation();StyleModal.open(t.dataset.sid,t,{name:i.style,useText:D.client_mode?"想要同款":"用这个风格",onUse:()=>{play(i,false);$("#pSame").click()}});return}play(i,true)});if(L[0])play(L[0],false)}
+async function init(){D=window.SHOWCASE_DATA||await (await fetch("/api/showcase")).json();
+ if(D.tagline)$("#hTitle").textContent=D.tagline;$("#hIntro").textContent=D.intro||"";
+ $("#hStats").innerHTML=`<div><b>${D.items.length}</b><span>精选案例</span></div><div><b>${D.types.length}</b><span>视频类型</span></div><div><b>${D.types_with_items.length||"—"}</b><span>已有案例的类型</span></div>`;
+ $("#tabs").innerHTML=[{id:"",name:"全部"},...D.types_with_items].map(t=>`<button data-t="${t.id}" class="${t.id==F?"on":""}">${esc(t.name)}</button>`).join("");
+ document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{F=b.dataset.t;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x==b));render()});
+ $("#tgrid").innerHTML=D.types.map(t=>`<div class="tc"><b>${esc(t.name)}</b><p>${esc(t.desc)}</p></div>`).join("");
+ $("#pNext").onclick=()=>{const L=list();play(L[(CUR+1)%L.length],true)};render()}
+init();
+</script></body></html>

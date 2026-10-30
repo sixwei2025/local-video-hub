@@ -1,0 +1,98 @@
+{
+  "bots": [
+    {
+      "id": "psych",
+      "name": "短视频操盘手1·心理科普",
+      "role": "心理科普制作与修改",
+      "types": [
+        "psych"
+      ],
+      "lines": [
+        "kepu"
+      ]
+    },
+    {
+      "id": "wenzhe",
+      "name": "短视频操盘手 2·文哲类",
+      "role": "文哲类制作与修改",
+      "types": [
+        "wenzhe"
+      ],
+      "lines": [
+        "wenzhe"
+      ]
+    },
+    {
+      "id": "duanju",
+      "name": "短视频操盘手 3·人物传记",
+      "role": "人物传记制作与修改",
+      "types": [
+        "duanju"
+      ],
+      "lines": [
+        "duanju"
+      ]
+    },
+    {
+      "id": "map3d",
+      "name": "短视频操盘手4：3D 地图",
+      "role": "3D地图制作与修改",
+      "types": [
+        "map3d"
+      ],
+      "lines": [
+        "map3d"
+      ]
+    },
+    {
+      "id": "koubo",
+      "name": "短视频操盘手 5·口播",
+      "role": "口播制作与修改",
+      "types": [
+        "koubo"
+      ],
+      "lines": [
+        "koubo"
+      ]
+    },
+    {
+      "id": "promo",
+      "name": "短视频操盘手 6·宣传片",
+      "role": "宣传片制作与修改",
+      "types": [
+        "promo"
+      ],
+      "lines": [
+        "promo"
+      ]
+    },
+    {
+      "id": "lead",
+      "name": "短视频部门负责人·实验室",
+      "role": "项目统筹、实验室与杂项测试",
+      "types": [
+        "hotnews",
+        "lab",
+        "daihuo",
+        "collage",
+        "product_demo",
+        "customer_case",
+        "tutorial",
+        "storytelling"
+      ],
+      "lines": [
+        "lab",
+        "other"
+      ]
+    }
+  ],
+  "excluded_roles": [
+    "短视频发布官"
+  ],
+  "aliases": {
+    "短视频操盘手 3·短剧": "短视频操盘手 3·人物传记",
+    "短视频操盘手3·短剧": "短视频操盘手 3·人物传记",
+    "短视频操盘手 3:短剧": "短视频操盘手 3·人物传记",
+    "短视频操盘手3:短剧": "短视频操盘手 3·人物传记"
+  }
+}

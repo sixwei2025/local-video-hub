@@ -1,0 +1,9 @@
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.0
+python-multipart>=0.0.9
+# optional tools (cover compose / ref resolve)
+Pillow>=10.0
+numpy>=1.26
+# optional: tools/resolve_ref.py Method B
+# playwright>=1.40

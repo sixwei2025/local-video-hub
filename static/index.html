@@ -1,0 +1,97 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>汇芯视频中心 · 本地片场</title><link rel="stylesheet" href="/static/cinema.css"><link rel="stylesheet" href="/static/style.css"><link rel="stylesheet" href="/static/studio.css?v=20261022-publish2"><link rel="stylesheet" href="/static/story-library.css?v=3"></head><body class="demo">
+<header class="house" id="hero">
+<div class="curtain" aria-hidden="true"><div class="glow"></div><i class="beam l"></i><i class="beam r"></i><div class="valance"></div><div class="fringe"></div></div>
+  <div class="marquee">
+    <p class="presents">HUIXIN STUDIO · 本地运行</p>
+    <h1 class="wordmark">汇芯视频中心</h1>
+    <p class="edition" id="edition">七条产线 · 作品总览</p>
+    <div class="hstats" id="hstats"></div>
+    <div class="linebar" id="linebar"></div>
+  </div>
+</header>
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="#lib" aria-label="汇芯视频中心 首页"><span class="bname"><b>汇芯视频中心</b><small>HUIXIN · VIDEO HUB</small></span></a><span class="bsep"></span>
+  <nav class="mainnav"><a href="#gen" data-tab="gen">生成视频</a><a href="#lib" data-tab="lib">作品管理</a><a href="#pub" data-tab="pub">发布</a></nav>
+  <div class="todo" id="todo"></div>
+  <label class="switch" title="演示模式隐藏路径、命令等内部信息"><input type="checkbox" id="demoToggle" checked><span>演示模式</span></label>
+  <a class="showlink" href="/showcase" target="_blank" title="客户展示页：只放精选案例">客户展示 ↗</a><a class="newbtn" href="#gen">＋ 生成</a><button type="button" class="top-refresh" id="topRefresh" title="重新扫描片库并更新当前页面">↻ 刷新</button>
+</div></header>
+<main class="wrap">
+<section id="tab-lib" hidden>
+  <aside><h4>产线</h4><ul id="lineList"></ul><button class="btn ghostsm" id="rescan">刷新片库</button><div class="meta adm" id="scanInfo"></div></aside>
+  <div class="content">
+    <div class="filters">
+      <input id="q" placeholder="搜索作品标题、标签…">
+      <div class="seg" id="stateSeg"><button data-s="" class="on">全部</button><button data-s="making">制作中</button><button data-s="failed">失败</button><button data-s="confirm">待确认</button><button data-s="ready">待发布</button><button data-s="exported">已导出</button><button data-s="published">已发布</button><button data-s="featured">★ 精选</button><button data-s="archived">已归档</button></div>
+      <select id="sort"><option value="new">最新在前</option><option value="old">最早在前</option><option value="duration">时长最长</option></select>
+      <button class="btn" id="moreBtn">更多筛选 ▾</button>
+    </div>
+    <div class="morepanel" id="morePanel" hidden>
+      <label>画幅<select id="aspect"><option value="">全部</option><option value="portrait">竖屏</option><option value="landscape">横屏</option></select></label>
+      <label>风格<select id="styleSel"><option value="">全部风格</option></select></label>
+      <label>标签<select id="tagSel"><option value="">全部标签</option></select></label>
+      <label>日期从<input type="date" id="df"></label><label>到<input type="date" id="dt"></label>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="dim" id="count"></div>
+    <div class="grid" id="grid"></div>
+    <div id="sentinel" class="dim loadmore"></div>
+  </div>
+</section>
+<section id="tab-gen" hidden>
+  <div class="gen">
+    <form id="jobForm" class="panel">
+      <div class="create-heading"><h3>生成视频</h3></div>
+      <label class="idea-input"><span>内容</span><textarea name="prompt" rows="5" required placeholder="粘贴已有文案，或说说你的想法。
+例如：为我的咖啡店做一条 30 秒宣传片，突出手冲咖啡和安静的环境。"></textarea></label>
+      <div class="field"><span>视频类型</span><div class="typebar" id="typeBar"></div></div>
+      <div class="field"><span>视频风格 <em class="dim" id="styleHint" hidden></em></span><div class="stylegrid" id="styleGrid"></div></div>
+      <div id="customBox" class="custom" hidden>
+        <label>风格描述<textarea name="style_custom_text" rows="3" placeholder="例如：胶片颗粒、暖色调、慢推镜头、大字幕居中…（有参考视频时可不填）"></textarea></label>
+        <div class="field"><span>风格参考视频 <em class="dim">照着它的感觉做；可多条</em></span>
+          <div class="srv-drop" id="srvDrop"><b>拖入视频文件</b>，或 <u>点击选择</u> · mp4 / mov / webm<input type="file" id="srvFile" accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm" multiple hidden></div>
+          <div class="srv-link"><input id="srvUrl" placeholder="或粘贴视频链接 / 分享文案：抖音、B站、X、YouTube"><button type="button" class="ghost" id="srvResolve">解析</button></div>
+          <div class="srv-list" id="srvList"></div>
+          <div class="srv-save"><input id="srvName" placeholder="给这个风格起个名字，存成「我的风格」以后直接用"><button type="button" class="ghost" id="srvSave">存为我的风格</button></div>
+        </div>
+      </div>
+      <details class="more reference-fold"><summary>添加素材 <span class="dim">可选</span></summary><div class="field refbox">
+        <div class="reftabs"><button type="button" class="on" data-rt="up">上传视频</button><button type="button" data-rt="url">贴链接</button><button type="button" data-rt="lib">从作品库选一条</button></div>
+        <div data-rp="up"><input type="file" name="ref_videos" accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm" multiple id="refVideos"><div class="dim">支持 mp4 / mov / webm，单个最大 800MB</div></div>
+        <div data-rp="url" hidden><textarea name="ref_video_urls" id="refUrls" rows="2" placeholder="每行一个链接：抖音短链/全链、X、B 站、YouTube、视频号…"></textarea><button type="button" id="resolveBtn" style="margin-top:6px">解析链接并入库</button><div id="resolveOut" class="vprev"></div></div>
+        <div data-rp="lib" hidden><input id="libPick" placeholder="输入关键词搜索作品库…" style="width:100%"><div id="libRes" class="libres"></div></div>
+        <input type="hidden" name="ref_library_ids" id="refLibIds">
+        <div id="refVidPrev" class="vprev"></div>
+      </div>
+
+        <label>参考图（可多选）<input type="file" name="refs" accept="image/*" multiple id="refs"></label>
+        <div id="refPrev" class="refprev"></div>
+            </details>
+      <details class="more" id="moreSet"><summary>制作设置 <span class="dim">画幅、声音与保存位置</span></summary>      <div class="row2">
+        <label>产线<select name="line" id="genLine"></select></label>
+        <label>保存位置<span class="demo-only shortdir" id="genOutShort"></span><input class="adm" name="output_dir" id="genOut" list="outList" required><datalist id="outList"></datalist></label>
+      </div>
+
+
+        <div class="row2"><label>画幅<select name="aspect" id="fAspect"><option value="">按风格默认</option><option value="9:16">9:16 竖屏</option><option value="16:9">16:9 横屏</option><option value="3:4">3:4 竖屏</option><option value="1:1">1:1 方形</option></select></label>
+        <label>声音<select name="voice" id="fVoice"><option value="">按风格默认</option><option value="clone">六伟克隆声</option><option value="tts">AI 配音</option><option value="none">无配音（只配乐）</option></select></label></div></details>
+
+      <input type="hidden" name="video_type" id="fType"><input type="hidden" name="style_id" id="fStyle">
+      <div class="create-submit"><span><b id="creationSummary">选择视频效果</b><small id="draftStatus" aria-live="polite">内容仅保存在本机浏览器</small></span><button type="button" id="clearDraft" class="btn">清空内容</button><button type="submit" class="primary" id="jobGo">开始生成视频 ↗</button></div>
+    </form>
+    <div class="panel jobs"><h3>制作进度 <span class="dim" id="jobsInfo"></span></h3><div id="jobList"></div></div>
+  </div>
+</section>
+
+<section id="tab-pub" hidden>
+  <div class="publish-heading"><div><span class="create-eyebrow">PUBLISHING DESK</span><h2>发布中心</h2><p>确认作品，选择平台，查看每一次发布的进度。</p></div><a class="btn" href="#lib">从作品中选择 ↗</a></div><div class="pubpage">
+    <div class="publish-ready"><div class="pubbar" id="pubBar"></div><h3 class="h3">准备发布 <span class="dim" id="readyInfo"></span></h3><div class="grid" id="readyGrid"></div></div>
+    <div class="panel pubq"><div class="publish-record-heading"><h3>发布记录 <span class="dim" id="pubInfo"></span></h3><div class="publish-record-tools"><span>抖音 / 视频号 / 小红书 分别记录结果</span><div class="publish-layout" role="group" aria-label="发布记录排列方式"><button type="button" data-pub-layout="horizontal" aria-pressed="true">横排</button><button type="button" data-pub-layout="vertical" aria-pressed="false">竖排</button></div></div></div><div id="pubList"></div></div>
+  </div>
+</section>
+</main>
+<div id="modal" hidden><div class="mbox"><button class="x" id="mclose" aria-label="关闭">✕</button><div id="mbody"></div></div></div>
+<div id="confirm" hidden><div class="cbox"><div id="cText"></div><div class="row" style="justify-content:flex-end"><button class="btn" id="cNo">再想想</button><button class="primary" id="cYes">确定</button></div></div></div>
+<div id="toasts"></div>
+<script src="/static/stylemodal.js"></script><script src="/static/app.js?v=20261027-clean3"></script><script src="/static/story-library.js?v=3"></script></body></html>
