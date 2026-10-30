@@ -126,8 +126,9 @@ def check(wid, save=True):
     cov = [a for a in w["assets"] if a["kind"] == "cover"]
     if not cov: errs.append("缺封面")
     elif not os.path.isfile(cov[-1]["path"]): errs.append(f"封面文件不存在：{cov[-1]['path']}")
+    title_max = int((cfg().get("check_rules") or {}).get("title_max") or 50)
     if not (w.get("title") or "").strip(): errs.append("缺标题")
-    elif len(w["title"]) > 30: errs.append(f"标题超过 30 字（{len(w['title'])} 字）")
+    elif len(w["title"]) > title_max: errs.append(f"标题超过 {title_max} 字（{len(w['title'])} 字）")
     if not (w.get("description") or "").strip(): errs.append("缺简介")
     if not w["topics"]: errs.append("缺话题（至少 1 个）")
     for a in w["assets"]:

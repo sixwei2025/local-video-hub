@@ -67,6 +67,17 @@
       ]
     },
     {
+      "id": "workbuddy",
+      "name": "WorkBuddy",
+      "role": "WorkBuddy 教程制作与修改",
+      "types": [
+        "tutorial"
+      ],
+      "lines": [
+        "workbuddy"
+      ]
+    },
+    {
       "id": "lead",
       "name": "短视频部门负责人·实验室",
       "role": "项目统筹、实验室与杂项测试",
@@ -77,7 +88,6 @@
         "collage",
         "product_demo",
         "customer_case",
-        "tutorial",
         "storytelling"
       ],
       "lines": [
@@ -93,6 +103,10 @@
     "短视频操盘手 3·短剧": "短视频操盘手 3·人物传记",
     "短视频操盘手3·短剧": "短视频操盘手 3·人物传记",
     "短视频操盘手 3:短剧": "短视频操盘手 3·人物传记",
-    "短视频操盘手3:短剧": "短视频操盘手 3·人物传记"
+    "短视频操盘手3:短剧": "短视频操盘手 3·人物传记",
+    "WorkBuddy 教程": "WorkBuddy",
+    "workbuddy": "WorkBuddy",
+    "Workbuddy": "WorkBuddy",
+    "WB教程": "WorkBuddy"
   }
 }

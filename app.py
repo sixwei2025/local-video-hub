@@ -566,10 +566,16 @@ def api_work_update(wid: str, body: dict):
     if "selected_version_id" in body:
         v = INDEX["by_id"].get(body["selected_version_id"] or "")
         sets["selected_path"] = v["path"] if v else None
+    was_making = w["state"] == "making"
     if sets:
         sets["updated_at"] = queue_lib.now()
         c.execute("update works set " + ",".join(f"{k}=?" for k in sets) + " where id=?", (*sets.values(), wid)); c.commit()
-    c.close(); return api_work(wid)
+    meta_touch = any(k in sets for k in ("title", "description", "topics"))
+    c.close()
+    if was_making and meta_touch and sets.get("state", "making") == "making":
+        try: hub_lib.check(wid, save=True)
+        except Exception: pass
+    return api_work(wid)
 
 def cover_ver(w):
     """封面版本参数：封面文件 mtime 整数；文件不存在用 updated_at（避免 /workcover 缓存显示旧图）"""

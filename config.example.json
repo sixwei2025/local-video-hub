@@ -68,12 +68,22 @@
       "color": "#ec4899"
     },
     {
+      "id": "workbuddy",
+      "name": "workbuddy 教程",
+      "color": "#3b82f6"
+    },
+    {
       "id": "other",
       "name": "未归类",
       "color": "#94a3b8"
     }
   ],
   "rules": [
+    {
+      "line": "workbuddy",
+      "match": "教程培训|WorkBuddy|workbuddy|/tutorial/",
+      "type": "tutorial"
+    },
     {
       "line": "kepu",
       "match": "产线A-心理科普|心理|/kepu/|psych",
@@ -198,11 +208,30 @@
         "好物推荐"
       ],
       "desc_tail": "内容含AI生成"
+    },
+    "workbuddy": {
+      "topics": [
+        "WorkBuddy",
+        "教程"
+      ],
+      "desc_tail": "内容含AI生成"
+    },
+    "tutorial": {
+      "topics": [
+        "WorkBuddy",
+        "教程"
+      ],
+      "desc_tail": "内容含AI生成"
     }
   },
   "style_rules": {
     "_说明": "成片 → 视频类型 + 风格（styles.json 的 id）。按顺序匹配完整路径；style 留空 = 类型已知、风格未识别。页面可手动改。",
     "rules": [
+      {
+        "match": "教程培训|WorkBuddy|workbuddy|/tutorial/",
+        "type": "tutorial",
+        "style": ""
+      },
       {
         "match": "心理|/kepu/|psych|产线A",
         "type": "psych",
@@ -295,8 +324,9 @@
     "lab": "~/Desktop/产线G-实验室",
     "product_demo": "~/Desktop/产线G-实验室",
     "customer_case": "~/Desktop/产线G-实验室",
-    "tutorial": "~/Desktop/产线G-实验室",
-    "storytelling": "~/Desktop/产线G-实验室"
+    "tutorial": "~/Desktop/教程培训",
+    "storytelling": "~/Desktop/产线G-实验室",
+    "workbuddy": "~/Desktop/教程培训"
   },
   "type_lines": {
     "_说明": "生成页选视频类型后，产线下拉自动跟随",
@@ -311,7 +341,7 @@
     "collage": "lab",
     "product_demo": "lab",
     "customer_case": "lab",
-    "tutorial": "lab",
+    "tutorial": "workbuddy",
     "storytelling": "lab"
   },
   "showcase": {
@@ -323,5 +353,9 @@
     "client_mode": false,
     "contact": "想要同款？联系你的团队按这个样式制作。"
   },
-  "_说明_scan_roots": "网站与 hub under_roots 的允许根：仅桌面产线文件夹（与存在的 output_dirs 一致）。hub submit 的成片必须在此之内。"
+  "_说明_scan_roots": "网站与 hub under_roots 的允许根：仅桌面产线文件夹（与存在的 output_dirs 一致）。hub submit 的成片必须在此之内。",
+  "check_rules": {
+    "_说明": "成片提交核对：制作中→待确认。title_max 为作品标题上限（发布页抖音/各平台另截）。",
+    "title_max": 50
+  }
 }

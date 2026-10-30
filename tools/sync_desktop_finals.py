@@ -297,8 +297,10 @@ def collect_candidates(cfg, roots, known, titled, days: int | None, min_duration
     out = []
     for it in winners:
         title = clean_stem_title(it["stem"], cfg)
-        if len(title) > 30:
-            title = title[:30].rstrip("，,、 ·-_|｜")
+        # hub 核对 title_max（六伟2026-10-30 放宽到 50）；发布页另截抖音≤30
+        title_max = int((cfg.get("check_rules") or {}).get("title_max") or 50)
+        if len(title) > title_max:
+            title = title[:title_max].rstrip("，,、 ·-_|｜")
         nt = norm_title(title)
         exist = titled.get(nt)
         if exist and (exist.get("state") == "published" or exist.get("selected_path")):
