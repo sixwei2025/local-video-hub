@@ -1,0 +1,5 @@
+{"source": "covers_ref/07 封面文件/2026-09-18-WorkBuddy低价积分风险.png，裁 (1490,100)-(2350,1000)",
+ "made": "2026-10-09 20:44（第二版，matting）",
+ "method": "rembg isnet-general-use 生成 mask → trimap（发区未知带 18px，其它 6px，原图橙色描边强制为背景）→ pymatting 闭式 alpha matting（分块）→ estimate_foreground_ml 边缘去色 → 发区去雾去红 → 耳垂与下颌缺口补阴影 → 0.8px 羽化（面部框在 PNG 像素坐标）",
+ "rebuild": "python scripts/make_cutout_hd.py --src <上面的源图> --box 1490 100 2350 1000 --out assets/owner_cutout_hd.png",
+ "face_box": [231, 13, 581, 503], "note": "face_box 用本 PNG 的像素坐标，范围从发顶到下巴"}

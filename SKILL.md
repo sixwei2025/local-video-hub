@@ -31,6 +31,18 @@ author: 袁六伟 · 台州汇芯（公众号/视频号：袁六伟）
   --desc "3步把聊天框升级成自动化产线" \
   --topics "#AI智能体 #一人公司 #袁六伟"
 ```
+
+## 内置高级感视频封面双画幅渲染器（`tools/render_video_cover.py`）
+
+入库前若缺少高颜值竖版 `3:4` 封面（`1080×1440` / `2160×2880`）或横版 `16:9` 首帧（`1920×1080`），直接调用内置 `tools/render_video_cover.py`（融合 GitHub `guizang-social-card-skill` + `qiaomu-html-cover` + `ponyo-cover-anchor-system` 设计体系，支持 `swiss_dark` / `midnight` / `paper` / `kraft` / `indigo` / `swiss_klein` / `brand` 7 套主题与 4 大版式）：
+```bash
+/opt/homebrew/bin/python3.11 tools/render_video_cover.py \
+  --title "为什么你的AI|总像实习生" \
+  --kicker "AI AGENT · 实战" \
+  --brand "WorkBuddy" \
+  --theme swiss_dark --portrait \
+  --out <output_dir>/
+```
 ---
 <!-- BRAND_FOOTER_HUIXIN -->
 ## 关于作者与品牌（袁六伟 · 台州汇芯）
