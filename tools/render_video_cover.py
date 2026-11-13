@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/homebrew/bin/python3.11
 # -*- coding: utf-8 -*-
 """汇芯 · 高级感视频封面双画幅渲染引擎 (render_video_cover.py)
 
@@ -165,6 +165,76 @@ SHADOW = {
     "brand":       "drop-shadow(-20px 8px 42px rgba(0,0,0,.12))",
 }
 
+# ============================================================ 汇芯品牌标准视频封面 6 大预设家族 (HUIXIN BRAND PRESETS)
+BRAND_PRESETS = {
+    "huixin-founder-gold": dict(
+        name="汇芯 · 创始人黑金杂志风",
+        theme="midnight",
+        layout="editorial-portrait",
+        portrait=True,
+        kicker="袁六伟 · 一人AI公司实战复盘",
+        brand="HUIXIN AI",
+        strip_left="袁六伟 · 台州汇芯",
+        strip_right="学员 7000+ · 企业客户 100+",
+        use="个人 IP 故事 · 创业复盘 · 深度商业认知（主力人像黑金版）",
+    ),
+    "huixin-tech-flagship": dict(
+        name="汇芯 · 暗夜瑞士黑红科技风",
+        theme="swiss_dark",
+        layout="swiss-metric",
+        portrait=False,
+        kicker="HUIXIN OPEN SOURCE · 旗舰发布",
+        brand="AI WORKFLOW",
+        strip_left="袁六伟 · 台州汇芯",
+        strip_right="GITHUB · SIXWEI2025",
+        use="开源 Skill 宣传片 · AI 工具评测 · 硬核自动化流水线（主力黑红科技版）",
+    ),
+    "huixin-ui-showcase": dict(
+        name="汇芯 · 真实界面瑞士画框风",
+        theme="swiss_dark",
+        layout="ui-showcase",
+        portrait=False,
+        kicker="REAL INTERFACE · 实操演示",
+        brand="HUIXIN STUDIO",
+        strip_left="袁六伟 · 台州汇芯",
+        strip_right="LIVE DEMO · 100% REAL",
+        use="软件实操教程 · 产品界面演示 · 桌面自动化取证（主力真实界面版）",
+    ),
+    "huixin-brand-red": dict(
+        name="汇芯 · 经典汇芯红白杂志风",
+        theme="brand",
+        layout="editorial-portrait",
+        portrait=True,
+        kicker="台州汇芯 · 企业 AI 智能体落地",
+        brand="袁六伟",
+        strip_left="袁六伟 · 台州汇芯",
+        strip_right="覆盖近 20 个行业 · 全案交付",
+        use="政企商单案例 · 训练营宣发 · 品牌官方介绍（主力白底汇芯红版）",
+    ),
+    "huixin-editorial-paper": dict(
+        name="汇芯 · 纸本墨方法论杂志风",
+        theme="paper",
+        layout="editorial-portrait",
+        portrait=True,
+        kicker="AI 实战派 · 认知与方法论",
+        brand="WorkBuddy",
+        strip_left="袁六伟 · 台州汇芯",
+        strip_right="EDITORIAL · ISSUE 2026",
+        use="知识星球专栏 · 保姆级教程 · 行业热点拆解（主力暖纸杂志版）",
+    ),
+    "huixin-klein-data": dict(
+        name="汇芯 · 克莱因蓝极客数据风",
+        theme="swiss_klein",
+        layout="swiss-metric",
+        portrait=False,
+        kicker="BENCHMARK · 实测数据报告",
+        brand="HUIXIN LAB",
+        strip_left="袁六伟 · 台州汇芯",
+        strip_right="DATA BENCHMARK",
+        use="多模型横评 · 榜单盘点 · 效率倍增对比（主力克莱因蓝数据版）",
+    ),
+}
+
 
 def find_cutout() -> tuple[Path | None, list[int]]:
     for p in CUTOUT_CANDIDATES:
@@ -232,7 +302,7 @@ def treat_portrait(src: Path, dst: Path, mode: str) -> tuple[Path, tuple[int, in
         out = np.clip(rgb * 0.95, 0, 255)
 
     merged = np.concatenate([out, alpha], axis=-1).clip(0, 255).astype(np.uint8)
-    img = Image.fromarray(merged, "RGBA")
+    img = Image.fromarray(merged)
     img = ImageEnhance.Sharpness(img).enhance(1.10)
     img.save(dst)
     return dst, im.size
@@ -321,7 +391,7 @@ def build_3x4_html(brief: dict, theme_key: str, layout: str,
         base_fs = 128 if len(lines) <= 2 else 106
         max_tw = 936
     elif layout == "ui-showcase":
-        base_fs = 122 if len(lines) <= 2 else 100
+        base_fs = 114 if len(lines) <= 2 else 96
         max_tw = 936
     else:  # manifesto-poster
         base_fs = 148 if len(lines) <= 2 else 120
@@ -427,10 +497,10 @@ def build_3x4_html(brief: dict, theme_key: str, layout: str,
         # 真实界面杂志画框风：上方 43% 瑞士排版，下方 57% 真实软件截图/视频帧 + 极简浏览器顶栏
         layout_css = f"""
         .txt {{
-          position:absolute; left:72px; top:84px; width:936px; z-index:5;
+          position:absolute; left:72px; top:76px; width:936px; z-index:5;
         }}
         .ui-frame {{
-          position:absolute; left:64px; right:64px; top:610px; bottom:118px; z-index:4;
+          position:absolute; left:64px; right:64px; top:654px; bottom:116px; z-index:4;
           border-radius: 20px;
           overflow: hidden;
           background: #111215;
@@ -856,9 +926,30 @@ def render_and_check(html_3x4: Path, out_3x4_png: Path,
     }
 
 
+def apply_brand_preset(brief: dict, preset_key: str = "") -> dict:
+    """将汇芯品牌标准预设 (BRAND_PRESETS) 注入 brief，用户显式传入的字段优先。"""
+    pk = (preset_key or brief.get("preset") or "").strip().lower()
+    if not pk or pk not in BRAND_PRESETS:
+        return brief
+    p = BRAND_PRESETS[pk]
+    merged = dict(brief)
+    merged["preset"] = pk
+    if not merged.get("theme"):
+        merged["theme"] = p["theme"]
+    if not merged.get("layout"):
+        merged["layout"] = p["layout"]
+    if "portrait" not in merged:
+        merged["portrait"] = p["portrait"]
+    for k in ("kicker", "brand", "strip_left", "strip_right"):
+        if not merged.get(k):
+            merged[k] = p.get(k, "")
+    return merged
+
+
 def render_cover_pair(brief: dict, out_dir: Path,
                       theme_key: str | None = None,
                       layout: str | None = None,
+                      preset_key: str | None = None,
                       out_3x4_name: str = "cover-3x4.png",
                       out_16x9_name: str = "cover-opening.png",
                       dpr: int = 2,
@@ -867,6 +958,7 @@ def render_cover_pair(brief: dict, out_dir: Path,
     out_dir = Path(out_dir).expanduser().resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    brief = apply_brand_preset(brief, preset_key or "")
     tk = (theme_key or brief.get("theme") or "swiss_dark").strip().lower()
     if tk not in THEMES:
         tk = "swiss_dark"
@@ -916,75 +1008,69 @@ def render_cover_pair(brief: dict, out_dir: Path,
 
 DEMO_BRIEFS = [
     dict(
-        slug="01_swiss_dark_metric",
-        theme="swiss_dark",
-        layout="swiss-metric",
-        kicker="GITHUB 开源剪辑工作流 · 实测",
-        brand="OpenMontage",
-        metric="322K★",
-        metric_label="15 STUDIO PIPELINES · 42 FFMPEG TOOLS",
-        title_lines=["全自动剪辑视频", "10分钟出大片"],
-        subtitle="一套开源 Skill 替代整支后期团队 · 保姆级实操",
+        slug="01_huixin_founder_gold",
+        preset="huixin-founder-gold",
+        kicker="一人AI公司 · 创业实战复盘",
+        brand="HUIXIN AI",
+        title_lines=["我走过的弯路", "和交付的结果"],
+        subtitle="学员 7000+ · 服务商单客户 100+ · 覆盖近 20 个行业",
         strip_left="袁六伟 · 台州汇芯",
-        strip_right="AI VIDEO SUITE",
+        strip_right="FOUNDER EDITION",
     ),
     dict(
-        slug="02_midnight_portrait",
-        theme="midnight",
-        layout="editorial-portrait",
-        kicker="一人公司 · 商业实战复盘",
-        brand="AI Agent",
-        title_lines=["企业智能体落地", "100+商单真相"],
-        subtitle="服务近 20 个行业后的硬核交付方法论",
+        slug="02_huixin_tech_flagship",
+        preset="huixin-tech-flagship",
+        kicker="WECHAT AUTOPILOT · 旗舰开源",
+        brand="9-STEP PIPELINE",
+        metric="9步闭环",
+        metric_label="ZERO-FLUFF · MECHANICAL QUALITY GATE · AUTO DRAFT",
+        title_lines=["把规矩写进代码", "一人就是编辑部"],
+        subtitle="从热点雷达、真机取证到汇芯红排版自动进草稿箱",
         strip_left="袁六伟 · 台州汇芯",
-        strip_right="ISSUE 2026.11",
+        strip_right="GITHUB · SIXWEI2025",
     ),
     dict(
-        slug="03_paper_portrait",
-        theme="paper",
-        layout="editorial-portrait",
-        kicker="知识星球 · 运营方法论",
-        brand="WorkBuddy",
-        title_lines=["别再手动排封面", "审美即转化率"],
-        subtitle="Editorial 杂志风 + Swiss 瑞士网格双引擎",
+        slug="03_huixin_ui_showcase",
+        preset="huixin-ui-showcase",
+        kicker="HUIXIN SKILLS MANAGER · 中央大脑",
+        brand="Skills Hub",
+        title_lines=["统管全机技能", "告别散乱与重复"],
+        subtitle="536 项技能去重精选 · 4 大 Agent 工具一键同步",
+        shot="/Users/yuanliuwei/Workbuddy/github-skills-14/huixin-skills-manager/assets/showcase/01-real-interface.png",
         strip_left="袁六伟 · 台州汇芯",
-        strip_right="DESIGN SYSTEM",
+        strip_right="REAL INTERFACE",
     ),
     dict(
-        slug="04_swiss_klein_metric",
-        theme="swiss_klein",
-        layout="swiss-metric",
-        kicker="AI 实战派 · 交付标准",
-        brand="HUIXIN LAB",
-        metric="7000+",
-        metric_label="VERIFIED STUDENTS & 100+ ENTERPRISE CLIENTS",
-        title_lines=["把复杂技术讲人话", "拿走就能直接跑"],
-        subtitle="台州汇芯全套开源 Skill 生态矩阵",
-        strip_left="袁六伟 · 台州汇芯",
-        strip_right="OPEN SOURCE",
-    ),
-    dict(
-        slug="05_kraft_manifesto",
-        theme="kraft",
-        layout="manifesto-poster",
-        index="01",
-        kicker="认知重构 · 创业随笔",
-        brand="一人公司",
-        title_lines=["工具越强", "审美越值钱"],
-        subtitle="淘汰廉价微商风 · 建立高辨识度视觉资产",
-        strip_left="袁六伟 · 台州汇芯",
-        strip_right="MANIFESTO",
-    ),
-    dict(
-        slug="06_brand_portrait",
-        theme="brand",
-        layout="editorial-portrait",
-        kicker="企业 AI 落地 · 全案交付",
+        slug="04_huixin_brand_red",
+        preset="huixin-brand-red",
+        kicker="个人IP定位 · 真实创业故事",
         brand="台州汇芯",
-        title_lines=["72小时验证需求", "零代码跑通闭环"],
-        subtitle="学员 7000+ · 服务商单客户 100+",
+        title_lines=["从时薪20块", "到一人AI公司"],
+        subtitle="把复杂技术讲人话 · 做拿走就能跑的 AI 智能体",
         strip_left="袁六伟 · 台州汇芯",
-        strip_right="HUIXIN RED",
+        strip_right="HUIXIN BRAND RED",
+    ),
+    dict(
+        slug="05_huixin_editorial_paper",
+        preset="huixin-editorial-paper",
+        kicker="WORKBUDDY · 实操方法论",
+        brand="Skill 变现",
+        title_lines=["写好一个Skill", "上架持续变现"],
+        subtitle="把十年行业经验封装成可复用的数字资产",
+        strip_left="袁六伟 · 台州汇芯",
+        strip_right="EDITORIAL PAPER",
+    ),
+    dict(
+        slug="06_huixin_klein_data",
+        preset="huixin-klein-data",
+        kicker="AI VIDEO SUITE · 生产力工具栈",
+        brand="VIDEO LAB",
+        metric="6大引擎",
+        metric_label="CUT-AS-CODE · FFMPEG · REMOTION · VOICEBOX",
+        title_lines=["做视频必装Skill", "10分钟出成片"],
+        subtitle="台州汇芯开源视频工作流 · 审美与效率双重拉满",
+        strip_left="袁六伟 · 台州汇芯",
+        strip_right="SWISS KLEIN",
     ),
 ]
 
@@ -1017,7 +1103,9 @@ def main():
     ap.add_argument("--metric", default="", help="瑞士巨型数字锚点，如 '322K★' 或 '10X'")
     ap.add_argument("--metric-label", default="", help="巨型数字下方英文说明")
     ap.add_argument("--shot", default="", help="真实软件界面截图路径（触发 ui-showcase 版式）")
-    ap.add_argument("--theme", default="swiss_dark", choices=list(THEMES.keys()), help="视觉主题")
+    ap.add_argument("--preset", default="", choices=[""] + list(BRAND_PRESETS.keys()),
+                    help="汇芯品牌标准预设：huixin-founder-gold / huixin-tech-flagship / huixin-ui-showcase / huixin-brand-red / huixin-editorial-paper / huixin-klein-data")
+    ap.add_argument("--theme", default="", help="视觉主题（留空则按 --preset 或默认 swiss_dark）")
     ap.add_argument("--layout", default="", help="版式：editorial-portrait / swiss-metric / ui-showcase / manifesto-poster")
     ap.add_argument("--portrait", action="store_true", help="强制启用真人抠像杂志版式")
     ap.add_argument("--no-portrait", action="store_true", help="禁用真人抠像")
@@ -1025,11 +1113,14 @@ def main():
     ap.add_argument("--center-safe-16x9", action="store_true", help="16:9 首帧文字收敛在中央 810x1080 (3:4) 安全区内")
     ap.add_argument("--out", default="cover", help="输出目录")
     ap.add_argument("--demo", action="store_true", help="一次生成 6 套高审美样板间 + Contact Sheet 总览图")
-    ap.add_argument("--list", action="store_true", help="列出所有可用主题与版式")
+    ap.add_argument("--list", action="store_true", help="列出所有可用汇芯品牌预设、主题与版式")
     args = ap.parse_args()
 
     if args.list:
-        print("=== 6+1 套高审美视觉主题 (Themes) ===")
+        print("=== 🏆 汇芯品牌视频封面 6 大标准预设 (Brand Presets) ===")
+        for k, v in BRAND_PRESETS.items():
+            print(f"  {k:<24} {v['name']:<16}  {v['use']}")
+        print("\n=== 7 套高审美视觉主题 (Themes) ===")
         for k, v in THEMES.items():
             print(f"  {k:<13} {v['name']:<8}  {v['use']}")
         print("\n=== 4 大版式原型 (Layouts) ===")
@@ -1048,8 +1139,9 @@ def main():
             sub_dir = out_root / item["slug"]
             res = render_cover_pair(
                 item, sub_dir,
-                theme_key=item["theme"],
-                layout=item["layout"],
+                theme_key=item.get("theme"),
+                layout=item.get("layout"),
+                preset_key=item.get("preset"),
                 dpr=1,
             )
             cards_3x4.append(Path(res["cover_3x4_png"]))
@@ -1069,7 +1161,8 @@ def main():
     else:
         t_lines = [x.strip() for x in (args.title or "AI 自动化工作流|3分钟出成片").split("|") if x.strip()]
         brief = {
-            "kicker": args.kicker or "HUIXIN · AI STUDIO",
+            "preset": args.preset,
+            "kicker": args.kicker,
             "brand": args.brand,
             "title_lines": t_lines,
             "subtitle": args.sub,
@@ -1086,8 +1179,9 @@ def main():
 
     res = render_cover_pair(
         brief, out_root,
-        theme_key=args.theme if args.theme else brief.get("theme"),
-        layout=args.layout if args.layout else brief.get("layout"),
+        theme_key=args.theme if args.theme else None,
+        layout=args.layout if args.layout else None,
+        preset_key=args.preset if args.preset else brief.get("preset"),
         dpr=args.dpr,
         center_safe_16x9=args.center_safe_16x9,
     )
