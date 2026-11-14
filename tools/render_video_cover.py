@@ -355,7 +355,8 @@ def _adaptive_title_size(lines: list[str], base_size: int, max_width: int) -> li
 # ============================================================ 竖版 3:4 (1080×1440) HTML 构建
 def build_3x4_html(brief: dict, theme_key: str, layout: str,
                    portrait_uri: str = "", shot_uri: str = "",
-                   psize: tuple[int, int] = (817, 883)) -> str:
+                   psize: tuple[int, int] = (817, 883),
+                   big_title: bool = False) -> str:
     W, H = 1080, 1440
     t = THEMES[theme_key]
     font_css = _font_face_css()
@@ -384,7 +385,10 @@ def build_3x4_html(brief: dict, theme_key: str, layout: str,
     top_bar_div = f'<div class="top-bar"></div>' if t["top_bar"] else ""
 
     # 针对不同 layout 设定标题可用宽度与基准字号
-    if layout == "editorial-portrait":
+    if big_title:
+        base_fs = 192 if len(lines) <= 2 else 156
+        max_tw = 936
+    elif layout == "editorial-portrait":
         base_fs = 126 if len(lines) <= 2 else 104
         max_tw = 930
     elif layout == "swiss-metric":
@@ -409,7 +413,7 @@ def build_3x4_html(brief: dict, theme_key: str, layout: str,
             f'<div class="{cls}" style="font-size:{fs}px;font-weight:{fw}"><span>{html.escape(ln)}</span></div>'
         )
     title_html = "\n".join(title_rows)
-    brand_html = f'<div class="brand">{brand}</div>' if brand else ""
+    brand_html = "" if big_title else (f'<div class="brand">{brand}</div>' if brand else "")
     sub_html = f'<div class="rule"></div><div class="sub">{sub}</div>' if sub else '<div class="rule"></div>'
 
     # 主视觉层构建
@@ -418,10 +422,11 @@ def build_3x4_html(brief: dict, theme_key: str, layout: str,
 
     if layout == "editorial-portrait" and portrait_uri:
         # 竖屏 3:4：上方文字，下方偏右杂志级半身人像，发顶绝不裁切，顶部渐变避开发顶杜绝雾化
-        pw = 740
+        pw = 640 if big_title else 740
         ph = round(pw * psize[1] / psize[0])
         pl = W - pw + 32
-        pt = H - ph + 44
+        pt = H - ph + (60 if big_title else 44)
+        txt_top = 175 if big_title else 84
         layout_css = f"""
         .portrait {{
           position:absolute; left:{pl}px; top:{pt}px; width:{pw}px; height:{ph}px;
@@ -437,7 +442,7 @@ def build_3x4_html(brief: dict, theme_key: str, layout: str,
             linear-gradient(0deg, {rgba(t['paper'], 0.82)} 0%, {rgba(t['paper'], 0.0)} 11%);
         }}
         .txt {{
-          position:absolute; left:72px; top:84px; width:936px; z-index:5;
+          position:absolute; left:72px; top:{txt_top}px; width:936px; z-index:5;
         }}
         """
         body_extra = f'<img class="portrait" src="{portrait_uri}" alt=""><div class="tint"></div>'
@@ -658,7 +663,8 @@ html, body {{ width:{W}px; height:{H}px; overflow:hidden; background:{t['paper']
 def build_16x9_html(brief: dict, theme_key: str, layout: str,
                     portrait_uri: str = "", shot_uri: str = "",
                     psize: tuple[int, int] = (817, 883),
-                    center_safe: bool = False) -> str:
+                    center_safe: bool = False,
+                    big_title: bool = False) -> str:
     """1920×1080 横屏视频 0.01s 首帧。
     - 默认横屏杂志展开版：左半幅高冲击标题 + 锚点数字，右半幅精修人像或真实软件画框。
     - 若开启 center_safe=True：所有核心文字严格收敛在中央 810×1080 (x: 555..1365) 的 3:4 安全框内，
@@ -691,9 +697,12 @@ def build_16x9_html(brief: dict, theme_key: str, layout: str,
     grain_div = '<div class="grain"></div>' if t["grain"] else ""
     top_bar_div = '<div class="top-bar"></div>' if t["top_bar"] else ""
 
-    txt_left = 580 if center_safe else 120
-    max_tw = 760 if center_safe else (980 if (portrait_uri or shot_uri) else 1560)
-    base_fs = 104 if center_safe else (136 if len(lines) <= 2 else 112)
+    txt_left = 570 if center_safe else 120
+    max_tw = 780 if center_safe else (980 if (portrait_uri or shot_uri) else 1560)
+    if big_title:
+        base_fs = (152 if len(lines) <= 2 else 124) if center_safe else (176 if len(lines) <= 2 else 140)
+    else:
+        base_fs = 104 if center_safe else (136 if len(lines) <= 2 else 112)
 
     line_sizes = _adaptive_title_size(lines, base_fs, max_tw)
     title_rows = []
@@ -705,7 +714,7 @@ def build_16x9_html(brief: dict, theme_key: str, layout: str,
             f'<div class="{cls}" style="font-size:{line_sizes[i]}px;font-weight:{fw}"><span>{html.escape(ln)}</span></div>'
         )
     title_html = "\n".join(title_rows)
-    brand_html = f'<div class="brand">{brand}</div>' if brand else ""
+    brand_html = "" if big_title else (f'<div class="brand">{brand}</div>' if brand else "")
     sub_html = f'<div class="rule"></div><div class="sub">{sub}</div>' if sub else '<div class="rule"></div>'
 
     metric_block = ""
@@ -726,9 +735,9 @@ def build_16x9_html(brief: dict, theme_key: str, layout: str,
         </div>
         """
     elif portrait_uri and layout == "editorial-portrait":
-        ph = 1020
+        ph = 940 if (big_title and center_safe) else 1020
         pw = round(ph * psize[0] / psize[1])
-        pl = (1920 - pw + 24) if not center_safe else (1365 - int(pw * 0.55))
+        pl = (1920 - pw + 24) if not center_safe else (1365 - int(pw * (0.45 if big_title else 0.55)))
         pt = H - ph + 28
         right_visual = f'<img class="portrait" src="{portrait_uri}" style="left:{pl}px;top:{pt}px;width:{pw}px;height:{ph}px" alt=""><div class="tint"></div>'
 
@@ -953,7 +962,8 @@ def render_cover_pair(brief: dict, out_dir: Path,
                       out_3x4_name: str = "cover-3x4.png",
                       out_16x9_name: str = "cover-opening.png",
                       dpr: int = 2,
-                      center_safe_16x9: bool = False) -> dict:
+                      center_safe_16x9: bool = False,
+                      big_title: bool = False) -> dict:
     """主入口：给定 brief 字典与输出目录，一键生成 3:4 竖版封面 + 16:9 横屏首帧。"""
     out_dir = Path(out_dir).expanduser().resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -985,12 +995,12 @@ def render_cover_pair(brief: dict, out_dir: Path,
     html_3x4 = out_dir / ".cover_3x4.html"
     html_16x9 = out_dir / ".cover_16x9.html"
     html_3x4.write_text(
-        build_3x4_html(brief, tk, ly, portrait_uri=portrait_uri, shot_uri=shot_uri, psize=psize),
+        build_3x4_html(brief, tk, ly, portrait_uri=portrait_uri, shot_uri=shot_uri, psize=psize, big_title=big_title),
         encoding="utf-8",
     )
     html_16x9.write_text(
         build_16x9_html(brief, tk, ly, portrait_uri=portrait_uri, shot_uri=shot_uri,
-                        psize=psize, center_safe=center_safe_16x9),
+                        psize=psize, center_safe=center_safe_16x9, big_title=big_title),
         encoding="utf-8",
     )
 
@@ -1111,6 +1121,7 @@ def main():
     ap.add_argument("--no-portrait", action="store_true", help="禁用真人抠像")
     ap.add_argument("--dpr", type=int, default=2, help="3:4 渲染倍率（默认 2 即 2160x2880）")
     ap.add_argument("--center-safe-16x9", action="store_true", help="16:9 首帧文字收敛在中央 810x1080 (3:4) 安全区内")
+    ap.add_argument("--big-title", action="store_true", help="视频号/抖音缩略图超大字中心安全区模式（隐藏英文副标，主标题拉大至 152~192px）")
     ap.add_argument("--out", default="cover", help="输出目录")
     ap.add_argument("--demo", action="store_true", help="一次生成 6 套高审美样板间 + Contact Sheet 总览图")
     ap.add_argument("--list", action="store_true", help="列出所有可用汇芯品牌预设、主题与版式")
@@ -1184,6 +1195,7 @@ def main():
         preset_key=args.preset if args.preset else brief.get("preset"),
         dpr=args.dpr,
         center_safe_16x9=args.center_safe_16x9,
+        big_title=args.big_title,
     )
     print(f"✅ 3:4 竖版封面: {res['cover_3x4_png']} & {res['cover_3x4_jpg']}")
     print(f"✅ 16:9 视频首帧: {res['cover_16x9_png']}")
