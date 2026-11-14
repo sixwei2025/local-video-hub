@@ -355,8 +355,7 @@ def _adaptive_title_size(lines: list[str], base_size: int, max_width: int) -> li
 # ============================================================ 竖版 3:4 (1080×1440) HTML 构建
 def build_3x4_html(brief: dict, theme_key: str, layout: str,
                    portrait_uri: str = "", shot_uri: str = "",
-                   psize: tuple[int, int] = (817, 883),
-                   big_title: bool = False) -> str:
+                   psize: tuple[int, int] = (817, 883)) -> str:
     W, H = 1080, 1440
     t = THEMES[theme_key]
     font_css = _font_face_css()
@@ -385,10 +384,7 @@ def build_3x4_html(brief: dict, theme_key: str, layout: str,
     top_bar_div = f'<div class="top-bar"></div>' if t["top_bar"] else ""
 
     # 针对不同 layout 设定标题可用宽度与基准字号
-    if big_title:
-        base_fs = 192 if len(lines) <= 2 else 156
-        max_tw = 936
-    elif layout == "editorial-portrait":
+    if layout == "editorial-portrait":
         base_fs = 126 if len(lines) <= 2 else 104
         max_tw = 930
     elif layout == "swiss-metric":
@@ -413,7 +409,7 @@ def build_3x4_html(brief: dict, theme_key: str, layout: str,
             f'<div class="{cls}" style="font-size:{fs}px;font-weight:{fw}"><span>{html.escape(ln)}</span></div>'
         )
     title_html = "\n".join(title_rows)
-    brand_html = "" if big_title else (f'<div class="brand">{brand}</div>' if brand else "")
+    brand_html = f'<div class="brand">{brand}</div>' if brand else ""
     sub_html = f'<div class="rule"></div><div class="sub">{sub}</div>' if sub else '<div class="rule"></div>'
 
     # 主视觉层构建
@@ -422,11 +418,10 @@ def build_3x4_html(brief: dict, theme_key: str, layout: str,
 
     if layout == "editorial-portrait" and portrait_uri:
         # 竖屏 3:4：上方文字，下方偏右杂志级半身人像，发顶绝不裁切，顶部渐变避开发顶杜绝雾化
-        pw = 640 if big_title else 740
+        pw = 740
         ph = round(pw * psize[1] / psize[0])
         pl = W - pw + 32
-        pt = H - ph + (60 if big_title else 44)
-        txt_top = 175 if big_title else 84
+        pt = H - ph + 44
         layout_css = f"""
         .portrait {{
           position:absolute; left:{pl}px; top:{pt}px; width:{pw}px; height:{ph}px;
@@ -442,7 +437,7 @@ def build_3x4_html(brief: dict, theme_key: str, layout: str,
             linear-gradient(0deg, {rgba(t['paper'], 0.82)} 0%, {rgba(t['paper'], 0.0)} 11%);
         }}
         .txt {{
-          position:absolute; left:72px; top:{txt_top}px; width:936px; z-index:5;
+          position:absolute; left:72px; top:84px; width:936px; z-index:5;
         }}
         """
         body_extra = f'<img class="portrait" src="{portrait_uri}" alt=""><div class="tint"></div>'
@@ -663,8 +658,7 @@ html, body {{ width:{W}px; height:{H}px; overflow:hidden; background:{t['paper']
 def build_16x9_html(brief: dict, theme_key: str, layout: str,
                     portrait_uri: str = "", shot_uri: str = "",
                     psize: tuple[int, int] = (817, 883),
-                    center_safe: bool = False,
-                    big_title: bool = False) -> str:
+                    center_safe: bool = False) -> str:
     """1920×1080 横屏视频 0.01s 首帧。
     - 默认横屏杂志展开版：左半幅高冲击标题 + 锚点数字，右半幅精修人像或真实软件画框。
     - 若开启 center_safe=True：所有核心文字严格收敛在中央 810×1080 (x: 555..1365) 的 3:4 安全框内，
@@ -697,12 +691,9 @@ def build_16x9_html(brief: dict, theme_key: str, layout: str,
     grain_div = '<div class="grain"></div>' if t["grain"] else ""
     top_bar_div = '<div class="top-bar"></div>' if t["top_bar"] else ""
 
-    txt_left = 570 if center_safe else 120
-    max_tw = 780 if center_safe else (980 if (portrait_uri or shot_uri) else 1560)
-    if big_title:
-        base_fs = (152 if len(lines) <= 2 else 124) if center_safe else (176 if len(lines) <= 2 else 140)
-    else:
-        base_fs = 104 if center_safe else (136 if len(lines) <= 2 else 112)
+    txt_left = 580 if center_safe else 120
+    max_tw = 760 if center_safe else (980 if (portrait_uri or shot_uri) else 1560)
+    base_fs = 104 if center_safe else (136 if len(lines) <= 2 else 112)
 
     line_sizes = _adaptive_title_size(lines, base_fs, max_tw)
     title_rows = []
@@ -714,7 +705,7 @@ def build_16x9_html(brief: dict, theme_key: str, layout: str,
             f'<div class="{cls}" style="font-size:{line_sizes[i]}px;font-weight:{fw}"><span>{html.escape(ln)}</span></div>'
         )
     title_html = "\n".join(title_rows)
-    brand_html = "" if big_title else (f'<div class="brand">{brand}</div>' if brand else "")
+    brand_html = f'<div class="brand">{brand}</div>' if brand else ""
     sub_html = f'<div class="rule"></div><div class="sub">{sub}</div>' if sub else '<div class="rule"></div>'
 
     metric_block = ""
@@ -735,9 +726,9 @@ def build_16x9_html(brief: dict, theme_key: str, layout: str,
         </div>
         """
     elif portrait_uri and layout == "editorial-portrait":
-        ph = 940 if (big_title and center_safe) else 1020
+        ph = 1020
         pw = round(ph * psize[0] / psize[1])
-        pl = (1920 - pw + 24) if not center_safe else (1365 - int(pw * (0.45 if big_title else 0.55)))
+        pl = (1920 - pw + 24) if not center_safe else (1365 - int(pw * 0.55))
         pt = H - ph + 28
         right_visual = f'<img class="portrait" src="{portrait_uri}" style="left:{pl}px;top:{pt}px;width:{pw}px;height:{ph}px" alt=""><div class="tint"></div>'
 
@@ -962,8 +953,7 @@ def render_cover_pair(brief: dict, out_dir: Path,
                       out_3x4_name: str = "cover-3x4.png",
                       out_16x9_name: str = "cover-opening.png",
                       dpr: int = 2,
-                      center_safe_16x9: bool = False,
-                      big_title: bool = False) -> dict:
+                      center_safe_16x9: bool = False) -> dict:
     """主入口：给定 brief 字典与输出目录，一键生成 3:4 竖版封面 + 16:9 横屏首帧。"""
     out_dir = Path(out_dir).expanduser().resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -995,12 +985,12 @@ def render_cover_pair(brief: dict, out_dir: Path,
     html_3x4 = out_dir / ".cover_3x4.html"
     html_16x9 = out_dir / ".cover_16x9.html"
     html_3x4.write_text(
-        build_3x4_html(brief, tk, ly, portrait_uri=portrait_uri, shot_uri=shot_uri, psize=psize, big_title=big_title),
+        build_3x4_html(brief, tk, ly, portrait_uri=portrait_uri, shot_uri=shot_uri, psize=psize),
         encoding="utf-8",
     )
     html_16x9.write_text(
         build_16x9_html(brief, tk, ly, portrait_uri=portrait_uri, shot_uri=shot_uri,
-                        psize=psize, center_safe=center_safe_16x9, big_title=big_title),
+                        psize=psize, center_safe=center_safe_16x9),
         encoding="utf-8",
     )
 
@@ -1010,6 +1000,58 @@ def render_cover_pair(brief: dict, out_dir: Path,
         html_3x4, out_3x4_png, html_16x9, out_16x9_png,
         dpr=dpr, face_box=face_box, psize=psize,
     )
+    if center_safe_16x9 and out_3x4_png.exists():
+        from PIL import Image, ImageDraw, ImageFont
+        _cov = Image.open(out_3x4_png).convert("RGB").resize((810, 1080), Image.Resampling.LANCZOS)
+        _top_c = _cov.getpixel((10, 4))
+        _bg_c = _cov.getpixel((10, 80))
+        _is_dark = sum(_bg_c) < 360
+        _canvas = Image.new("RGB", (1920, 1080), _bg_c)
+        _draw = ImageDraw.Draw(_canvas)
+        if sum(abs(a - b) for a, b in zip(_top_c, _bg_c)) > 30:
+            _draw.rectangle([0, 0, 1920, 14], fill=_top_c)
+        _canvas.paste(_cov, (555, 0))
+        _line_c = (60, 50, 54) if _is_dark else (224, 218, 210)
+        _draw.line([(555, 56), (555, 1024)], fill=_line_c, width=2)
+        _draw.line([(1365, 56), (1365, 1024)], fill=_line_c, width=2)
+        _f_bold = "/System/Library/Fonts/STHeiti Medium.ttc"
+        _f_reg = "/System/Library/Fonts/Hiragino Sans GB.ttc"
+        if Path(_f_bold).exists() and Path(_f_reg).exists():
+            _red_c = (239, 68, 68) if _is_dark else (200, 16, 46)
+            _ink_c = (245, 245, 245) if _is_dark else (26, 26, 28)
+            _muted_c = (180, 175, 170) if _is_dark else (110, 106, 100)
+            _card_bg = (24, 18, 20) if _is_dark else (255, 255, 255)
+            _card_bd = (90, 36, 40) if _is_dark else (228, 222, 214)
+            _lx, _lw = 262, 272
+            _draw.rectangle([_lx, 120, _lx + 12, 132], fill=_red_c)
+            _draw.text((_lx + 20, 115), "CORE HIGHLIGHTS", font=ImageFont.truetype(_f_bold, 16), fill=_red_c)
+            _draw.text((_lx, 150), str(brief.get("brand") or "台州汇芯")[:12], font=ImageFont.truetype(_f_bold, 24), fill=_ink_c)
+            _cards = [
+                ("01  实战实测直出", str(brief.get("kicker") or "拒绝空谈 · 跑通交付")[:14]),
+                ("02  重点一眼看清", str(brief.get("title_lines", [""])[0])[:14]),
+                ("03  一人公司提效", str(brief.get("subtitle") or "低成本高确定性")[:14]),
+            ]
+            _y = 236
+            for _h, _s in _cards:
+                _draw.rounded_rectangle([_lx, _y, _lx + _lw, _y + 122], radius=14, fill=_card_bg, outline=_card_bd, width=2)
+                _draw.text((_lx + 16, _y + 24), _h, font=ImageFont.truetype(_f_bold, 20), fill=_red_c)
+                _draw.text((_lx + 16, _y + 70), _s, font=ImageFont.truetype(_f_reg, 15), fill=_muted_c)
+                _y += 148
+            _draw.line([(_lx, 845), (_lx + _lw, 845)], fill=_line_c, width=2)
+            _draw.text((_lx, 872), "袁六伟 · 台州汇芯", font=ImageFont.truetype(_f_bold, 21), fill=_ink_c)
+            _draw.text((_lx, 908), "学员 7,000+ · 客户 100+", font=ImageFont.truetype(_f_reg, 15), fill=_muted_c)
+            _draw.text((_lx, 938), "得到 / 华为分享老师", font=ImageFont.truetype(_f_reg, 15), fill=_muted_c)
+            _rx, _rw = 1386, 272
+            _draw.rectangle([_rx, 120, _rx + 12, 132], fill=_red_c)
+            _draw.text((_rx + 20, 115), "VIDEO EDITION", font=ImageFont.truetype(_f_bold, 16), fill=_red_c)
+            _draw.text((_rx, 150), "转发分享 · 干货合集", font=ImageFont.truetype(_f_bold, 24), fill=_ink_c)
+            _draw.rounded_rectangle([_rx, 236, _rx + _rw, 460], radius=14, fill=_card_bg, outline=_red_c, width=2)
+            _draw.text((_rx + 18, 266), "为什么值得转发？", font=ImageFont.truetype(_f_bold, 20), fill=_red_c)
+            _draw.text((_rx + 18, 314), str(brief.get("title_lines", [""])[-1])[:13], font=ImageFont.truetype(_f_bold, 19), fill=_ink_c)
+            _draw.text((_rx + 18, 360), "真实实操 · 一线可复用", font=ImageFont.truetype(_f_reg, 15), fill=_muted_c)
+            _draw.rounded_rectangle([_rx, 876, _rx + _rw, 936], radius=999, fill=_red_c)
+            _draw.text((_rx + 36, 895), "转发收藏 · 点赞支持", font=ImageFont.truetype(_f_bold, 19), fill=(255, 255, 255))
+        _canvas.save(out_16x9_png)
     res["theme"] = tk
     res["theme_name"] = t["name"]
     res["layout"] = ly
@@ -1121,7 +1163,6 @@ def main():
     ap.add_argument("--no-portrait", action="store_true", help="禁用真人抠像")
     ap.add_argument("--dpr", type=int, default=2, help="3:4 渲染倍率（默认 2 即 2160x2880）")
     ap.add_argument("--center-safe-16x9", action="store_true", help="16:9 首帧文字收敛在中央 810x1080 (3:4) 安全区内")
-    ap.add_argument("--big-title", action="store_true", help="视频号/抖音缩略图超大字中心安全区模式（隐藏英文副标，主标题拉大至 152~192px）")
     ap.add_argument("--out", default="cover", help="输出目录")
     ap.add_argument("--demo", action="store_true", help="一次生成 6 套高审美样板间 + Contact Sheet 总览图")
     ap.add_argument("--list", action="store_true", help="列出所有可用汇芯品牌预设、主题与版式")
@@ -1195,7 +1236,6 @@ def main():
         preset_key=args.preset if args.preset else brief.get("preset"),
         dpr=args.dpr,
         center_safe_16x9=args.center_safe_16x9,
-        big_title=args.big_title,
     )
     print(f"✅ 3:4 竖版封面: {res['cover_3x4_png']} & {res['cover_3x4_jpg']}")
     print(f"✅ 16:9 视频首帧: {res['cover_16x9_png']}")

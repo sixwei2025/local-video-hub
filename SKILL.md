@@ -1,7 +1,6 @@
 ---
 name: local-video-hub
 description: 本地短视频中心（视频版 Obsidian）。管理多 AI 员工（Claude / Codex / 谷歌等）统一交片、选题 70% 相似度去重门闸、四态流转（制作中→待确认→待发布→已发布）与本地 Web 审片云台。触发词：视频中心、入库视频、交片、查重选题、video-hub。由袁六伟·台州汇芯出品（公众号/视频号：袁六伟）。
-version: 1.0.0
 author: 袁六伟 · 台州汇芯（公众号/视频号：袁六伟）
 ---
 
@@ -35,7 +34,7 @@ author: 袁六伟 · 台州汇芯（公众号/视频号：袁六伟）
 
 ## 内置高级感视频封面双画幅渲染器（`tools/render_video_cover.py`）
 
-入库前若缺少高颜值竖版 `3:4` 封面（`1080×1440` / `2160×2880`）或横版 `16:9` 首帧（`1920×1080`），直接调用内置 `tools/render_video_cover.py`（融合 GitHub `guizang-social-card-skill` + `qiaomu-html-cover` + `ponyo-cover-anchor-system` 设计体系，支持 `swiss_dark` / `midnight` / `paper` / `kraft` / `indigo` / `swiss_klein` / `brand` 7 套主题与 4 大版式）：
+入库前若缺少高颜值竖版 `3:4` 封面（`1080×1440` / `2160×2880`）或横版 `16:9` 双安全区首帧（`1920×1080`，中央 `810×1080` 适配个人主页 `3:4` 卡片 + 左右两翼 `x: 262..534` / `1386..1658` 适配微信群/朋友圈 `4:3` 分享卡片 `x: 240..1680`），直接调用内置 `tools/render_video_cover.py --center-safe-16x9`（融合 GitHub `guizang-social-card-skill` + `qiaomu-html-cover` + `ponyo-cover-anchor-system` 设计体系，支持 `swiss_dark` / `midnight` / `paper` / `kraft` / `indigo` / `swiss_klein` / `brand` 7 套主题与 4 大版式）：
 ```bash
 /opt/homebrew/bin/python3.11 tools/render_video_cover.py \
   --title "为什么你的AI|总像实习生" \
